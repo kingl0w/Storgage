@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    restart: always
+    depends_on:
+      - db
+    environment:
+      - PORT=8080
+      - DATABASE_URL=postgres://postgres:password@db:5432/cloudstorage?sslmode=disable
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"  # Serve frontend on port 3000
+
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: cloudstorage
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  pg_data:
