@@ -29,8 +29,10 @@
         } else {
             const data = await response.json();
             error = data.error || 'Signup failed';
+	    console.error('Signup error:', data);
         }
     } catch (e) {
+	console.error('Signup error:', e);
         error = 'Signup failed';
     }
 }
