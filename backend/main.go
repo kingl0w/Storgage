@@ -35,7 +35,7 @@ func main() {
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 
-			if r.Method == "OPTIONS" {
+			if r.Method == http.MethodOptions {
 				w.WriteHeader(http.StatusOK)
 				return
 			}
@@ -43,12 +43,12 @@ func main() {
 		})
 	})
 
-	// Routes
-	r.HandleFunc("/api/files", storageHandler.ListFiles).Methods("GET")
-	r.HandleFunc("/api/upload", storageHandler.UploadFile).Methods("POST")
-	r.HandleFunc("/api/signup", handlers.Signup).Methods("POST")
-	r.HandleFunc("/api/login", handlers.Login).Methods("POST")
-	r.HandleFunc("/api/admin/invite", handlers.GenerateInvite).Methods("POST")
+	// Routes (add "OPTIONS" for each cross-origin route)
+	r.HandleFunc("/api/files", storageHandler.ListFiles).Methods("GET", "OPTIONS")
+	r.HandleFunc("/api/upload", storageHandler.UploadFile).Methods("POST", "OPTIONS")
+	r.HandleFunc("/api/signup", handlers.Signup).Methods("POST", "OPTIONS")
+	r.HandleFunc("/api/login", handlers.Login).Methods("POST", "OPTIONS")
+	r.HandleFunc("/api/admin/invite", handlers.GenerateInvite).Methods("POST", "OPTIONS")
 	r.HandleFunc("/api/verify-invite", handlers.VerifyInviteHandler).Methods("POST", "OPTIONS")
 
 	port := config.Port
