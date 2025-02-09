@@ -29,6 +29,17 @@ export async function signup(username: string, password: string, inviteCode: str
     return response;
 }
 
+export async function verifyInvite(code: string) {
+    const response = await fetch(`${API_URL}/verify-invite`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ code })
+    });
+    return response;
+}
+
 export async function uploadFile(file: File): Promise<FileInfo> {
     const formData = new FormData();
     formData.append('file', file);

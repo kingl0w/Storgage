@@ -5,7 +5,7 @@ services:
     build: ./backend
     restart: always
     depends_on:
-      - db  # ✅ Simplified for Docker Compose v3.8 compatibility
+      - db 
     environment:
       - PORT=8080
       - DATABASE_URL=postgres://postgres:password@db:5432/cloudstorage?sslmode=disable
@@ -20,7 +20,7 @@ services:
     depends_on:
       - backend
     environment:
-      - VITE_API_URL=http://backend:8080/api  # ✅ Ensure this matches backend service name
+      - VITE_API_URL=http://localhost:8080/api  
     ports:
       - "3000:80"  # Serve frontend on port 3000
 
