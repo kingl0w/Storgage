@@ -44,6 +44,7 @@ func main() {
 	r.HandleFunc("/api/generate-invite", handlers.GenerateInvite).Methods("POST")
 	r.HandleFunc("/api/signup", handlers.Signup).Methods("POST")
 	r.HandleFunc("/api/login", handlers.Login).Methods("POST")
+	r.HandleFunc("/api/admin/invite", handlers.GenerateInvite).Methods("POST")
 
 	//start server
 	port := config.Port

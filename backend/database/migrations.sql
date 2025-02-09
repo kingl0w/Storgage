@@ -7,6 +7,9 @@ CREATE TABLE users (
 
 CREATE TABLE invite_codes (
     id SERIAL PRIMARY KEY,
-    code TEXT UNIQUE NOT NULL,
-    used BOOLEAN DEFAULT FALSE
+    code VARCHAR(8) UNIQUE NOT NULL,
+    used BOOLEAN DEFAULT FALSE,
+    used_by INTEGER REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    used_at TIMESTAMP
 );
