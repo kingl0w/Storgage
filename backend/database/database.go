@@ -40,28 +40,27 @@ func ConnectDB(cfg *config.Config) {
 }
 
 func runMigrations() error {
-	migrationsPath := "/app/database/migrations.sql"
+	var exists bool
+	err := DB.QueryRow(context.Background(),
+		"SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'users')",
+	).Scan(&exists)
 
-	// Print working directory (debugging)
-	wd, _ := os.Getwd()
-	fmt.Println("Current working directory:", wd)
-
-	// Check if migrations.sql exists
-	_, err := os.Stat(migrationsPath)
 	if err != nil {
-		fmt.Println("migrations.sql NOT found at:", migrationsPath)
-		return fmt.Errorf("error finding migrations file: %v", err)
-	} else {
-		fmt.Println("migrations.sql FOUND at:", migrationsPath)
+		return fmt.Errorf("error checking for existing tables: %v", err)
 	}
 
-	// Read migrations file
+	if exists {
+		fmt.Println("Tables already exist, skipping migrations.")
+		return nil
+	}
+
+	// Run migrations only if the tables do not exist
+	migrationsPath := "/app/database/migrations.sql"
 	migrations, err := os.ReadFile(migrationsPath)
 	if err != nil {
 		return fmt.Errorf("error reading migrations file: %v", err)
 	}
 
-	// Execute migrations
 	_, err = DB.Exec(context.Background(), string(migrations))
 	if err != nil {
 		return fmt.Errorf("error executing migrations: %v", err)
