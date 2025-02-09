@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { signup, verifyInvite } from '$lib/api';
-    
+    import { signup } from '$lib/api';
+
     let username = '';
     let password = '';
     let confirmPassword = '';
@@ -9,31 +9,30 @@
     let error = '';
 
     async function handleSignup() {
-    if (password !== confirmPassword) {
-        error = 'Passwords do not match';
-        return;
-    }
-
-    try {
-        const verifyResponse = await verifyInvite(inviteCode);
-        if (!verifyResponse.ok) {
-            error = 'Invalid invitation code';
+        if (password !== confirmPassword) {
+            error = 'Passwords do not match';
             return;
         }
 
+        
         const response = await signup(username, password, inviteCode);
+
         if (response.ok) {
             await goto('/login');
         } else {
-            const data = await response.json();
+            let data;
+            try {
+                data = await response.json();
+            } catch (e) {
+                const textErr = await response.text();
+                console.error('Server error:', textErr);
+                error = textErr || 'Signup failed';
+                return;
+            }
             error = data.error || 'Signup failed';
-	    console.error('Signup error:', data);
+            console.error('Signup error:', data);
         }
-    } catch (e) {
-	console.error('Signup error:', e);
-        error = 'Signup failed';
     }
-}
 </script>
 
 <div class="signup-container">

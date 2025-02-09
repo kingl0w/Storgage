@@ -88,18 +88,6 @@ func VerifyInviteCode(code string) (bool, error) {
 		return false, nil
 	}
 
-	//mark code as used
-	_, err = database.DB.Exec(
-		context.Background(),
-		`UPDATE invite_codes SET used = true, used_at = $1 WHERE code = $2`,
-		time.Now(),
-		code,
-	)
-
-	if err != nil {
-		return false, err
-	}
-
 	return true, nil
 }
 
