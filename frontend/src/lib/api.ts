@@ -68,3 +68,11 @@ export async function listFiles(): Promise<FileInfo[]> {
     
     return response.json();
 }
+
+export async function deleteFile(filename: string) {
+    const response = await fetch(`${API_URL}/files/${filename}`, {
+        method: 'DELETE',
+        headers: getAuthHeader()
+    });
+    return response;
+}

@@ -45,6 +45,8 @@ func main() {
 
 	// Routes (add "OPTIONS" for each cross-origin route)
 	r.HandleFunc("/api/files", storageHandler.ListFiles).Methods("GET", "OPTIONS")
+	r.HandleFunc("/api/files/{filename}", storageHandler.DeleteFile).
+		Methods("DELETE", "OPTIONS")
 	r.HandleFunc("/api/upload", storageHandler.UploadFile).Methods("POST", "OPTIONS")
 	r.HandleFunc("/api/signup", handlers.Signup).Methods("POST", "OPTIONS")
 	r.HandleFunc("/api/login", handlers.Login).Methods("POST", "OPTIONS")

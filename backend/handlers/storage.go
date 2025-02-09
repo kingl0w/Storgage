@@ -11,6 +11,7 @@ import (
 	"storgage/config"
 
 	"github.com/Azure/azure-storage-blob-go/azblob"
+	"github.com/gorilla/mux"
 )
 
 type StorageHandler struct {
@@ -85,10 +86,8 @@ func (h *StorageHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	// Create blob URL
 	blobURL := h.containerURL.NewBlockBlobURL(header.Filename)
 
-	// Upload the file
 	_, err = azblob.UploadStreamToBlockBlob(
 		context.Background(),
 		file,
@@ -103,14 +102,12 @@ func (h *StorageHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Generate SAS URL
 	sasURL, err := h.generateSasURL(blobURL)
 	if err != nil {
 		http.Error(w, "Error generating file access URL", http.StatusInternalServerError)
 		return
 	}
 
-	// Return the file info with SAS URL
 	fileInfo := map[string]interface{}{
 		"name":       header.Filename,
 		"url":        sasURL,
@@ -137,10 +134,9 @@ func (h *StorageHandler) ListFiles(w http.ResponseWriter, r *http.Request) {
 		for _, blobInfo := range listBlob.Segment.BlobItems {
 			blobURL := h.containerURL.NewBlobURL(blobInfo.Name)
 
-			// Generate SAS URL for each blob
 			sasURL, err := h.generateSasURL(blobURL.ToBlockBlobURL())
 			if err != nil {
-				continue // Skip files we can't generate URLs for
+				continue
 			}
 
 			files = append(files, map[string]interface{}{
@@ -153,6 +149,28 @@ func (h *StorageHandler) ListFiles(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondJSON(w, files)
+}
+
+func (h *StorageHandler) DeleteFile(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	fileName := vars["filename"]
+	if fileName == "" {
+		http.Error(w, "Filename is required", http.StatusBadRequest)
+		return
+	}
+
+	blobURL := h.containerURL.NewBlockBlobURL(fileName)
+
+	ctx := context.Background()
+	_, err := blobURL.Delete(ctx, azblob.DeleteSnapshotsOptionNone, azblob.BlobAccessConditions{})
+	if err != nil {
+		// Check if it's a "not found" error or something else
+		http.Error(w, "Could not delete file: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"message": "File deleted"})
 }
 
 func respondJSON(w http.ResponseWriter, data interface{}) {
