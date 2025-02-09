@@ -101,3 +101,29 @@ func VerifyInviteCode(code string) (bool, error) {
 
 	return true, nil
 }
+
+// VerifyInviteHandler handles checking the validity of an invite code
+func VerifyInviteHandler(w http.ResponseWriter, r *http.Request) {
+	var request struct {
+		Code string `json:"code"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	valid, err := VerifyInviteCode(request.Code)
+	if err != nil {
+		http.Error(w, "Error verifying invite code", http.StatusInternalServerError)
+		return
+	}
+
+	if !valid {
+		http.Error(w, "Invite code is invalid or already used", http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"message": "Invite code is valid!"})
+}
