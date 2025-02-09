@@ -5,12 +5,15 @@ services:
     build: ./backend
     restart: always
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - PORT=8080
       - DATABASE_URL=postgres://postgres:password@db:5432/cloudstorage?sslmode=disable
     ports:
       - "8080:8080"
+    volumes:
+      - ./backend/database/migrations.sql:/app/database/migrations.sql  # ✅ Mount migrations.sql
 
   frontend:
     build: ./frontend
@@ -31,6 +34,12 @@ services:
       - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      retries: 5
+      start_period: 10s  # ✅ Ensure Postgres is ready before backend starts
 
 volumes:
   pg_data:
+
