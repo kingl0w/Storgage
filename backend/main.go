@@ -49,7 +49,7 @@ func main() {
 	r.HandleFunc("/api/signup", handlers.Signup).Methods("POST")
 	r.HandleFunc("/api/login", handlers.Login).Methods("POST")
 	r.HandleFunc("/api/admin/invite", handlers.GenerateInvite).Methods("POST")
-	r.HandleFunc("/api/verify-invite", handlers.VerifyInviteHandler).Methods("POST")
+	r.HandleFunc("/api/verify-invite", handlers.VerifyInviteHandler).Methods("POST", "OPTIONS")
 
 	port := config.Port
 	log.Printf("Server starting on port %s...", port)
