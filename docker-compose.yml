@@ -20,7 +20,7 @@ services:
     depends_on:
       - backend
     environment:
-      - VITE_API_URL=http://localhost:8080/api  
+      - VITE_API_URL=http://40.90.193.108:8080/api 
     ports:
       - "3000:80"  # Serve frontend on port 3000
 

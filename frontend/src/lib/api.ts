@@ -1,6 +1,6 @@
 import type { FileInfo } from './types';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://40.90.193.108:8080/api';
 
 function getAuthHeader(): HeadersInit {
     const token = localStorage.getItem('authToken');
