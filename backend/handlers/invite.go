@@ -1,3 +1,4 @@
+// handlers/invite.go
 package handlers
 
 import (
@@ -20,9 +21,7 @@ type AdminCredentials struct {
 	Password string `json:"password"`
 }
 
-// generate invite code
 func generateInviteCode() string {
-	// Use crypto/rand in production for better randomness
 	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
 	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	code := make([]byte, 8)
@@ -32,19 +31,17 @@ func generateInviteCode() string {
 	return string(code)
 }
 
-// create invite code and store it in database
 func GenerateInvite(w http.ResponseWriter, r *http.Request) {
-	// Parse admin credentials
 	var creds AdminCredentials
 	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		jsonError(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
 	//verify admin credentials
 	if creds.Username != os.Getenv("ADMIN_USERNAME") ||
 		creds.Password != os.Getenv("ADMIN_PASSWORD") {
-		http.Error(w, "Invalid admin credentials", http.StatusUnauthorized)
+		jsonError(w, "Invalid admin credentials", http.StatusUnauthorized)
 		return
 	}
 
@@ -61,17 +58,16 @@ func GenerateInvite(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if err != nil {
-		http.Error(w, "Failed to create invite code", http.StatusInternalServerError)
+		jsonError(w, "Failed to create invite code", http.StatusInternalServerError)
 		return
 	}
 
-	//return invite code
 	response := InviteResponse{Code: inviteCode}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
 
-// verify invite code when user signs up
+// (Re)define the VerifyInviteCode function if needed
 func VerifyInviteCode(code string) (bool, error) {
 	var used bool
 	err := database.DB.QueryRow(
@@ -83,15 +79,14 @@ func VerifyInviteCode(code string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-
 	if used {
+		// Code is already used
 		return false, nil
 	}
-
 	return true, nil
 }
 
-// VerifyInviteHandler handles checking the validity of an invite code
+// VerifyInviteHandler calls VerifyInviteCode
 func VerifyInviteHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Received verify-invite request from: %s", r.RemoteAddr)
 	var request struct {
@@ -99,18 +94,18 @@ func VerifyInviteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		jsonError(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
 	valid, err := VerifyInviteCode(request.Code)
 	if err != nil {
-		http.Error(w, "Error verifying invite code", http.StatusInternalServerError)
+		jsonError(w, "Error verifying invite code", http.StatusInternalServerError)
 		return
 	}
 
 	if !valid {
-		http.Error(w, "Invite code is invalid or already used", http.StatusUnauthorized)
+		jsonError(w, "Invite code is invalid or already used", http.StatusUnauthorized)
 		return
 	}
 
