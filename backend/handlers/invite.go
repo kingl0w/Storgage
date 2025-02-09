@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -104,6 +105,7 @@ func VerifyInviteCode(code string) (bool, error) {
 
 // VerifyInviteHandler handles checking the validity of an invite code
 func VerifyInviteHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Received verify-invite request from: %s", r.RemoteAddr)
 	var request struct {
 		Code string `json:"code"`
 	}
