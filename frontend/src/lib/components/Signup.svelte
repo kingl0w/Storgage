@@ -15,14 +15,12 @@
     }
 
     try {
-        // First verify invite code
         const verifyResponse = await verifyInvite(inviteCode);
         if (!verifyResponse.ok) {
             error = 'Invalid invitation code';
             return;
         }
 
-        // Then proceed with signup
         const response = await signup(username, password, inviteCode);
         if (response.ok) {
             await goto('/login');

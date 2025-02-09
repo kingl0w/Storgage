@@ -24,7 +24,7 @@ export async function signup(username: string, password: string, inviteCode: str
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ username, password, inviteCode })
+        body: JSON.stringify({ username, password, invite: inviteCode })
     });
     return response;
 }
