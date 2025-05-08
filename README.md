@@ -1,10 +1,10 @@
-##Storage Webapp
+## Storage Webapp
 
 A self storage application I built to share files between my work and personal computer
 
 It utilizes Azure Blob storage, Go, Svelte, and an auth invitation functionality
 
-##Setup
+## Setup
 
 Pretty much ready for deployment you will need to create an .env file in the backend with:
 
