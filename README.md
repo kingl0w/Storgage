@@ -53,7 +53,7 @@ JWT_SECRET=your_jwt_secret
 - POSTGRES_DB=cloudstorage
 - DATABASE_URL=postgres://your_db_username:your_db_password@db:5432/cloudstorage?sslmode=disable
 
-#### 'frontend/.env'
+#### `frontend/.env`
 VITE_API_URL=http://localhost:8080/api
 
 ## Running the app
