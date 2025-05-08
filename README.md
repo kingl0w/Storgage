@@ -39,19 +39,19 @@ PORT=8080
 JWT_SECRET=your_jwt_secret
 
 # Azure Blob Storage
-AZURE_STORAGE_ACCOUNT=your_azure_account_name
-AZURE_STORAGE_ACCESS_KEY=your_azure_access_key
-AZURE_STORAGE_CONTAINER=your_container_name
+- AZURE_STORAGE_ACCOUNT=your_azure_account_name
+- AZURE_STORAGE_ACCESS_KEY=your_azure_access_key
+- AZURE_STORAGE_CONTAINER=your_container_name
 
 # Admin Login
-ADMIN_USERNAME=your_admin_username
-ADMIN_PASSWORD=your_admin_password
+- ADMIN_USERNAME=your_admin_username
+- ADMIN_PASSWORD=your_admin_password
 
 # PostgreSQL
-POSTGRES_USER=your_db_username
-POSTGRES_PASSWORD=your_db_password
-POSTGRES_DB=cloudstorage
-DATABASE_URL=postgres://your_db_username:your_db_password@db:5432/cloudstorage?sslmode=disable
+- POSTGRES_USER=your_db_username
+- POSTGRES_PASSWORD=your_db_password
+- POSTGRES_DB=cloudstorage
+- DATABASE_URL=postgres://your_db_username:your_db_password@db:5432/cloudstorage?sslmode=disable
 
 #### 'frontend/.env'
 VITE_API_URL=http://localhost:8080/api
