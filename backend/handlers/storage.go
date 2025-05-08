@@ -42,16 +42,12 @@ func NewStorageHandler(config *config.Config) (*StorageHandler, error) {
 	}, nil
 }
 
-// Helper function to generate SAS URL
 func (h *StorageHandler) generateSasURL(blobURL azblob.BlockBlobURL) (string, error) {
-	// Create a SAS token that's valid for 1 hour
 	startTime := time.Now().UTC().Add(-1 * time.Minute)
 	expiryTime := startTime.Add(1 * time.Hour)
 
-	// Convert BlobSASPermissions to string
 	permissions := azblob.BlobSASPermissions{Read: true}.String()
 
-	// Get the URL and parse it
 	u := blobURL.URL()
 	urlParts := azblob.NewBlobURLParts(u)
 
@@ -68,7 +64,6 @@ func (h *StorageHandler) generateSasURL(blobURL azblob.BlockBlobURL) (string, er
 		return "", err
 	}
 
-	// Construct the full URL with SAS token
 	baseURL := u.String()
 	return fmt.Sprintf("%s?%s", baseURL, sasQueryParams.Encode()), nil
 }
@@ -164,7 +159,6 @@ func (h *StorageHandler) DeleteFile(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	_, err := blobURL.Delete(ctx, azblob.DeleteSnapshotsOptionNone, azblob.BlobAccessConditions{})
 	if err != nil {
-		// Check if it's a "not found" error or something else
 		http.Error(w, "Could not delete file: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
