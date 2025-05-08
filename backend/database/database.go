@@ -13,11 +13,11 @@ import (
 
 var DB *pgx.Conn
 
-// ConnectDB initializes the database connection and runs migrations
+//initializes the database connection and runs migrations
 func ConnectDB(cfg *config.Config) {
 	var err error
 
-	// Retry database connection
+	//retries database connection
 	for i := 0; i < 10; i++ {
 		DB, err = pgx.Connect(context.Background(), cfg.DatabaseURL)
 		if err == nil {
@@ -32,7 +32,7 @@ func ConnectDB(cfg *config.Config) {
 		log.Fatal("Unable to connect to database:", err)
 	}
 
-	// Run migrations
+	//run migrations
 	if err := runMigrations(); err != nil {
 		log.Fatal("Failed to run migrations:", err)
 	}
@@ -54,7 +54,7 @@ func runMigrations() error {
 		return nil
 	}
 
-	// Run migrations only if the tables do not exist
+	//run migrations only if the tables do not exist
 	migrationsPath := "/app/database/migrations.sql"
 	migrations, err := os.ReadFile(migrationsPath)
 	if err != nil {
