@@ -6,42 +6,46 @@ services:
     restart: always
     depends_on:
       - db 
+    env_file:
+      - .env
     environment:
       - PORT=8080
-      - DATABASE_URL=postgres://postgres:password@db:5432/cloudstorage?sslmode=disable
+      - DATABASE_URL=${DATABASE_URL}
     ports:
       - "8080:8080"
     volumes:
-      - ./backend/database/migrations.sql:/app/database/migrations.sql  # ✅ Mount migrations.sql
+      - ./backend/database/migrations.sql:/app/database/migrations.sql 
 
   frontend:
     build: ./frontend
     restart: always
     depends_on:
       - backend
+    env_file:
+      - .env
     environment:
-      - VITE_API_URL=http://40.90.193.108:8080/api 
+      - VITE_API_URL=${VITE_API_URL}
     ports:
-      - "3000:80"  # Serve frontend on port 3000
+      - "3000:80" 
 
   db:
     image: postgres:latest
     restart: always
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: cloudstorage
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=cloudstorage
     ports:
       - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
       interval: 5s
       retries: 5
-      start_period: 10s  # ✅ Ensures Postgres is ready before backend starts
+      start_period: 10s 
 
 volumes:
   pg_data:
-
-
