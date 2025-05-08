@@ -12,13 +12,13 @@ require (
 )
 
 require (
-	github.com/Azure/azure-pipeline-go v0.2.3 // indirect
-	github.com/google/uuid v1.2.0 // indirect
-	github.com/jackc/pgpassfile v1.0.0 // indirect
-	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
-	github.com/mattn/go-ieproxy v0.0.1 // indirect
-	github.com/rogpeppe/go-internal v1.9.0 // indirect
-	golang.org/x/net v0.21.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	github.com/Azure/azure-pipeline-go v0.2.3 
+	github.com/google/uuid v1.2.0 
+	github.com/jackc/pgpassfile v1.0.0 
+	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 
+	github.com/mattn/go-ieproxy v0.0.1
+	github.com/rogpeppe/go-internal v1.9.0 
+	golang.org/x/net v0.21.0 
+	golang.org/x/sys v0.28.0 
+	golang.org/x/text v0.21.0 
 )
