@@ -1,4 +1,3 @@
-// handlers/invite.go
 package handlers
 
 import (
@@ -67,7 +66,7 @@ func GenerateInvite(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// (Re)define the VerifyInviteCode function if needed
+//define the VerifyInviteCode function if needed
 func VerifyInviteCode(code string) (bool, error) {
 	var used bool
 	err := database.DB.QueryRow(
@@ -80,13 +79,12 @@ func VerifyInviteCode(code string) (bool, error) {
 		return false, err
 	}
 	if used {
-		// Code is already used
 		return false, nil
 	}
 	return true, nil
 }
 
-// VerifyInviteHandler calls VerifyInviteCode
+//verifyInviteHandler calls verifyInviteCode
 func VerifyInviteHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Received verify-invite request from: %s", r.RemoteAddr)
 	var request struct {
