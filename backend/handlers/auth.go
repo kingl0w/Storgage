@@ -18,7 +18,6 @@ type Credentials struct {
 	Invite   string `json:"invite,omitempty"`
 }
 
-// SignUp example using jsonError from helpers.go
 func Signup(w http.ResponseWriter, r *http.Request) {
 	var creds Credentials
 	err := json.NewDecoder(r.Body).Decode(&creds)
@@ -27,13 +26,13 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate required fields
+	//validates required fields
 	if creds.Username == "" || creds.Password == "" || creds.Invite == "" {
 		jsonError(w, "Missing required fields", http.StatusBadRequest)
 		return
 	}
 
-	// Check if username already exists
+	//checks if username already exists
 	var exists bool
 	err = database.DB.QueryRow(context.Background(),
 		"SELECT EXISTS(SELECT 1 FROM users WHERE username = $1)",
@@ -47,13 +46,13 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if invite code is valid and not used
+	//checks if invite code is valid and not used
 	var inviteUsed bool
 	err = database.DB.QueryRow(context.Background(),
 		"SELECT used FROM invite_codes WHERE code = $1",
 		creds.Invite).Scan(&inviteUsed)
 	if err != nil {
-		// If the code wasn't found in DB, that's also an error:
+		//if the code wasn't found in DB, that's also an error:
 		jsonError(w, "Invalid invite code", http.StatusForbidden)
 		return
 	}
@@ -62,14 +61,14 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Hash password
+	//hash
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(creds.Password), bcrypt.DefaultCost)
 	if err != nil {
 		jsonError(w, "Error processing password", http.StatusInternalServerError)
 		return
 	}
 
-	// Begin transaction
+	//begins transaction
 	tx, err := database.DB.Begin(context.Background())
 	if err != nil {
 		jsonError(w, "Error starting transaction", http.StatusInternalServerError)
@@ -77,7 +76,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 	}
 	defer tx.Rollback(context.Background())
 
-	// Store new user
+	//store new user
 	var userId int
 	err = tx.QueryRow(context.Background(),
 		"INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id",
@@ -87,7 +86,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Mark invite as used
+	//mark invite as used
 	_, err = tx.Exec(context.Background(),
 		"UPDATE invite_codes SET used = TRUE, used_by = $1, used_at = $2 WHERE code = $3",
 		userId, time.Now(), creds.Invite)
@@ -96,7 +95,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Commit transaction
+	//commits transaction
 	if err = tx.Commit(context.Background()); err != nil {
 		jsonError(w, "Error completing registration", http.StatusInternalServerError)
 		return
@@ -107,7 +106,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"message": "User created successfully"})
 }
 
-// Login is unchanged except for using jsonError
+//login does unchanged except for using jsonError
 func Login(w http.ResponseWriter, r *http.Request) {
 	var creds Credentials
 	err := json.NewDecoder(r.Body).Decode(&creds)
@@ -125,14 +124,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Compare passwords
+	//compares passwords
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(creds.Password))
 	if err != nil {
 		jsonError(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
 
-	// Generate JWT Token
+	//generate the JWT Token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": creds.Username,
 		"exp":      time.Now().Add(time.Hour * 24).Unix(),
