@@ -20,7 +20,7 @@ func main() {
 
 	r := mux.NewRouter()
 
-	// Logging middleware
+	//logging middleware
 	r.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			log.Printf("%s %s", r.Method, r.URL.Path)
@@ -28,7 +28,7 @@ func main() {
 		})
 	})
 
-	// CORS middleware
+	//CORS 
 	r.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -43,7 +43,7 @@ func main() {
 		})
 	})
 
-	// Routes (add "OPTIONS" for each cross-origin route)
+	//routes 
 	r.HandleFunc("/api/files", storageHandler.ListFiles).Methods("GET", "OPTIONS")
 	r.HandleFunc("/api/files/{filename}", storageHandler.DeleteFile).
 		Methods("DELETE", "OPTIONS")
